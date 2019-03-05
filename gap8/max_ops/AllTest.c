@@ -1,6 +1,27 @@
 #include <stdio.h>
 #include <string.h>
 
+char tests_names[][50]={
+{"2x2/2 Max Pool"},
+{"2x2/2 Avg Pool"},
+{"5x5 Convolutions"},
+{"Linear"},
+{"Xnor Conv 5x5"},
+{"2x2/2 Max Pool Vect"},
+{"2x2/2 Avg Pool Vect"},
+{"5x5 Convolutions Vect"},
+{"LinearVect"},
+{"2x2/2 Parallel Max Pool"},
+{"2x2/2 Parallel Avg Pool"},
+{"Parallel 5x5 Convolution"},
+{"Parallel Linear"},
+{"Parallel Xnor Conv 5x5"},
+{"2x2/2 Parallel Max Pool Vect"},
+{"2x2/2 Parallel Avg Pool Vect"},
+{"Parallel Convolution Vect"},
+{"Parallel Linear Vect"}
+};
+
 #define ALIGN(Value, Size)      (((Value)&((1<<(Size))-1))?((((Value)>>(Size))+1)<<(Size)):(Value))
 
 #ifndef RV
@@ -47,6 +68,9 @@
 #define UNMOUNT         0
 #define CID             0
 
+
+
+#define ITERATIONS 100
 #define FREQ_FC 250*1000000
 #define FREQ_CL 175*1000000
 #define NUM_TESTS 18
@@ -61,6 +85,20 @@ typedef struct ClusterArg{
 } ClusterArg_t;
 
 ClusterArg_t Arg;
+
+
+char str[100];
+static char *float_to_string(float in){
+    
+    float adc_read = 678.0123;
+ 
+    int d1 = in;                // Get the integer part (678).
+    float f2 = in - d1;         // Get fractional part (678.0123 - 678 = 0.0123).
+    int d2 = trunc(f2 * 10000); // Turn into integer (123).
+ 
+    sprintf (str, "%d.%04d", d1, d2);
+    return str;
+}
 
 
 static int CoreCountDynamic = 0;
@@ -1123,13 +1161,6 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 	}
 }
 
-
-
-
-ClusterArg_t Arg;
-
-#define ITERATIONS 100
-
 int benchmarks(ClusterArg_t * ArgC){
 
     int   test_num         = ArgC->test_num;
@@ -1146,7 +1177,15 @@ int benchmarks(ClusterArg_t * ArgC){
 int main()
 {
     long long start_time, end_time;
-    long long int tot_time, op_num, res;
+    long long int tot_time, op_num;
+    float res;
+    
+    printf("\n\n");
+    printf("                      --------------------------------------------------------\n");
+    printf("                      --------------------------------------------------------\n");
+    printf("                      ---------------   GAP8 benchmarks   --------------------\n");
+    printf("                      --------------------------------------------------------\n");
+    printf("                      --------------------------------------------------------\n\n\n");
 
     if (rt_event_alloc(NULL, 8)) return -1;
 
@@ -1171,11 +1210,10 @@ int main()
         end_time = rt_time_get_us();
         
         tot_time = end_time-start_time;
-        //op_num = (Wic-4)*(Hic-4)*(5*5*2) * ITERATIONS;
         op_num   = Arg.Iter_operations * ITERATIONS;
+        res = (((float)op_num)*1000000)/ (float)tot_time;
 
-        res = (op_num*1000000)/tot_time;
-        printf("Time: %10lld MicroSec. Operations: %10lld OPS: %12lld\n", tot_time, op_num, res);
+        printf ("%30s Time: %10lld uSec. Operations: %10lld GOPs/S: %12s\n",tests_names[i],tot_time, op_num, float_to_string(res/1000000000));
     }
 
     rt_cluster_mount(UNMOUNT, CID, 0, NULL);
