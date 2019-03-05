@@ -93,9 +93,9 @@ static char *float_to_string(float in){
     
     float adc_read = 678.0123;
  
-    int d1 = in;                // Get the integer part (678).
-    float f2 = in - d1;         // Get fractional part (678.0123 - 678 = 0.0123).
-    int d2 = trunc(f2 * 10000); // Turn into integer (123).
+    int d1 = in;                
+    float f2 = in - d1;         
+    int d2 = trunc(f2 * 10000); 
  
     sprintf (str, "%d.%04d", d1, d2);
     return str;
