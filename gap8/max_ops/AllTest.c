@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 char tests_names[][50]={
 {"2x2/2 Max Pool"},
@@ -971,7 +972,7 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			for (int i=0; i<Iter; i++) Additive5x5Convolution(IN, Wic, Hic, FILTER, OUT, 6);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
-            *num_ops = 0;
+            *num_ops = (Wic-4)*(Hic-4)*(5*5*2);
 			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "5x5 Convolutions", Ti);
 			break;
 		case 3:
