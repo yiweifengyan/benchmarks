@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "pulp.h"
+#include "rt/rt_api.h"
 
 #define NOGPIO
 #define BYTE 
 
 
-#define ITERATIONS 10
+#define ITERATIONS 100
 #define ENABLE_CYCLE_TRACE 0
 
 #define ALIM_1_VOLT 0
@@ -48,6 +50,10 @@ char tests_names[][50]={
 {"Parallel Linear Vect"}
 };
 
+int test_input_w[]={Wi,Wi,Wi,Wil,Wxor};
+int test_input_h[]={Hi,Hi,Hi,Hil,Hxor};
+
+
 int tests_ops[10]={
     ((Wi/2)*(Hi/2)),
     ((Wi/2)*(Hi/2)),
@@ -73,7 +79,6 @@ char tests_titles[][50]={
 };
 
 
-int test_num[4]={5,4,5,4};
 
 #define ALIGN(Value, Size)      (((Value)&((1<<(Size))-1))?((((Value)>>(Size))+1)<<(Size)):(Value))
 
@@ -99,20 +104,48 @@ int test_num[4]={5,4,5,4};
 #endif
 
 #ifdef RISCV
+#define TOT_TEST 1
+int test_num[TOT_TEST]={5};
+
 #ifndef __EMUL__
-#include "pulp.h"
-#include "rt/rt_api.h"
 #endif
 
 
 #define L2_MEM                          __attribute__((section(".heapl2ram")))
 #define L1_CL_MEM                       __attribute__((section(".heapsram")))
 #define L1_FC_MEM                       __attribute__((section(".fcTcdm")))
+/* HW timer */
+#define ARCHI_FC_TIMER_ADDR                     ( ARCHI_FC_PERIPHERALS_ADDR + ARCHI_FC_TIMER_OFFSET  )
+#define PLP_TIMER_VALUE_LO                      0x08
+#define PLP_TIMER_CFG_REG_LO                    0x00
+#define PLP_TIMER_ENABLE_BIT            0
+#define PLP_TIMER_RESET_BIT             1
+#define PLP_TIMER_IRQ_ENABLE_BIT        2
+#define PLP_TIMER_IEM_BIT               3
+#define PLP_TIMER_CMP_CLR_BIT           4
+#define PLP_TIMER_ONE_SHOT_BIT          5
+#define PLP_TIMER_PRESCALER_ENABLE_BIT  6
+#define PLP_TIMER_CLOCK_SOURCE_BIT      7
+#define PLP_TIMER_PRESCALER_VALUE_BIT   8
+#define PLP_TIMER_PRESCALER_VALUE_BITS  8
+#define PLP_TIMER_64_BIT                31
 
-#define gap8_resethwtimer()             plp_fc_timer_conf_low(1, 1, 0, 0, 0, 0, 0, 0, 0)
-#define gap8_readhwtimer()              plp_fc_timer_get_count_low()
+#define plp_timer_conf_get(a,b,c,d,e,f,g,h,i)      ((a << PLP_TIMER_ENABLE_BIT) \
+        | (b << PLP_TIMER_RESET_BIT) \
+        | (c << PLP_TIMER_IRQ_ENABLE_BIT) \
+        | (d << PLP_TIMER_IEM_BIT) \
+        | (e << PLP_TIMER_CMP_CLR_BIT) \
+        | (f << PLP_TIMER_ONE_SHOT_BIT) \
+        | (g << PLP_TIMER_PRESCALER_ENABLE_BIT) \
+        | (h << PLP_TIMER_PRESCALER_VALUE_BIT) \
+        | (i << PLP_TIMER_64_BIT) \
+        )
+#define gap8_resethwtimer()                     pulp_write32(ARCHI_FC_TIMER_ADDR + PLP_TIMER_CFG_REG_LO, plp_timer_conf_get(1,1,0,0,0,0,0,0,0))
+#define gap8_readhwtimer()                      pulp_read32(ARCHI_FC_TIMER_ADDR + PLP_TIMER_VALUE_LO)
+
 #else
-
+#define TOT_TEST 4
+int test_num[TOT_TEST]={5,4,5,4};
 #include "Gap8.h"
 
 static int CoreCountDynamic = 0;
@@ -136,8 +169,6 @@ static inline unsigned int __attribute__((always_inline)) ChunkSize(unsigned int
 #define MOUNT           1
 #define UNMOUNT         0
 #define CID             0
-
-#define NUM_TESTS 18
 
 
 typedef struct ClusterArg{
@@ -1211,8 +1242,8 @@ int benchmarks(ClusterArg_t * ArgC){
 
 int main()
 {
-    long long start_time, end_time;
-    long long int tot_time, op_num,kernel_op_num;
+    long start_time, end_time;
+    long int tot_time, op_num,kernel_op_num;
     float res,res_kernel;
     int cur_test=0;
 
@@ -1231,7 +1262,6 @@ int main()
         return 1;
     }
     rt_padframe_set(profile_gpio);
-
     // GPIO initialization
     rt_gpio_init(0, GPIO);
     rt_gpio_set_dir(0, 1<<GPIO, RT_GPIO_IS_OUT);
@@ -1261,7 +1291,7 @@ int main()
     rt_freq_set(RT_FREQ_DOMAIN_FC, FREQ_FC);
     rt_freq_set(RT_FREQ_DOMAIN_CL, FREQ_CL);
     
-    for(int j=0; j < 4; j++ ){
+    for(int j=0; j < TOT_TEST; j++ ){
         printf("\n                      ---------------   %15s   ---------------\n",tests_titles[j]);
         for(int i=0; i < test_num[j]; i++ ){
 
@@ -1280,10 +1310,8 @@ int main()
             
             tot_time = end_time-start_time;
             op_num   = Arg.Iter_operations;
-            //Number of kernel unity ops (i.e. number of convolutions done for a conv kernel)
-            kernel_op_num = tests_ops[i] * ITERATIONS;
             
-            printf ("%30s Time: %10lld uSec. Cycles: %10lld\n",tests_names[i],tot_time, op_num);
+            printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
 
         }
     }
