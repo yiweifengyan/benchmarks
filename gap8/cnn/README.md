@@ -3,7 +3,7 @@
 We developed a test suite to test the gap8 cluster cores computational power and energy efficiency on a representative subset of Convolution Neural Networks (CNN) Layers. This guide gives the ability to the user to run by himself all the benchmarks and check cycles and energy results.
 
 
-###Benchmarks Description
+### Benchmarks Description
 
 Here the list of benchmarks of this test suite:
 
@@ -23,7 +23,7 @@ The benchmarks can be executed in 2 modalities:
 
 \* A list of all ISA extensions of Gap8 can be found in section "Device components description" of [Gap8 Reference Manual](https://greenwaves-technologies.com/sdk-manuals/)
 
-###Benchmarks Results
+### Benchmarks Results
 
 Here we reported the speedup we obtain in terms of cycles. The baseline is the Pure RiscV ISA.
 

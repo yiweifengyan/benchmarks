@@ -6,12 +6,12 @@
 #define BYTE 
 
 
-#define ITERATIONS 1
+#define ITERATIONS 10
 #define ENABLE_CYCLE_TRACE 0
 
-#define ALIM_1_VOLT 1
-#define FREQ_FC (50*1000000)
-#define FREQ_CL (50*1000000)
+#define ALIM_1_VOLT 0
+#define FREQ_FC (250*1000000)
+#define FREQ_CL (175*1000000)
 
 
 #define Wi  112  
@@ -1245,11 +1245,18 @@ int main()
     printf("                      --------------------------------------------------------\n");
     printf("                      --------------------------------------------------------\n\n\n");
 
+
+    printf("Gap8 Input Voltage    : %s\n",ALIM_1_VOLT?"1.0 Volt":"1.2 Volts");
+    printf("Fabric Controller Freq: %d MhZ\n", FREQ_FC/1000000);
+    printf("Cluster  Freq         : %d MhZ\n\n\n", FREQ_CL/1000000);
+    
+    printf("Number of iterations for each benchmark: %d\n\n\n", ITERATIONS);
+    
+
     if (rt_event_alloc(NULL, 8)) return -1;
 
     rt_cluster_mount(MOUNT, CID, 0, NULL);
     
-
     //Set Fabric Controller and Cluster Frequencies
     rt_freq_set(RT_FREQ_DOMAIN_FC, FREQ_FC);
     rt_freq_set(RT_FREQ_DOMAIN_CL, FREQ_CL);
@@ -1272,15 +1279,12 @@ int main()
             end_time = rt_time_get_us();
             
             tot_time = end_time-start_time;
-            op_num   = Arg.Iter_operations * ITERATIONS;
+            op_num   = Arg.Iter_operations;
             //Number of kernel unity ops (i.e. number of convolutions done for a conv kernel)
             kernel_op_num = tests_ops[i] * ITERATIONS;
-            res_kernel = (((float)kernel_op_num)*1000000)/ (float)tot_time;
-            res = (((float)op_num)*1000000)/ (float)tot_time;
             
-            //printf ("%30s Input Size: %dx%d Time: %10lld uSec. GOPs/S: %12s\n",tests_names[i],tests_input[i][0],tests_input[i][1],tot_time/ITERATIONS, float_to_string(res/1000000000));
-            printf ("%30s Time: %10lld uSec. Cycles: %10lld GOPs/S: %12s\n",tests_names[i],tot_time, op_num, float_to_string(res/1000000000));
-            //rt_time_wait_us(100000);
+            printf ("%30s Time: %10lld uSec. Cycles: %10lld\n",tests_names[i],tot_time, op_num);
+
         }
     }
 
