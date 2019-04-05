@@ -50,7 +50,7 @@ OUTPUT TO BE ADDED
 ##### To run the benchmarks in RiscV Standard ISA mode (only single core)
 
 ~~~sh
-make clean all RISCV_FLAGS="-march=rv32imc -DRISCV"
+make clean all run RISCV_FLAGS="-march=rv32imc -DRISCV"
 ~~~
 
 
