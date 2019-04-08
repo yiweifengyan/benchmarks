@@ -33,7 +33,7 @@ In the following chart we show the execution time speed up of Gap8. The baseline
 
 ![](imgs/compute.png "Compute Comparison")
 
-As we can see Gap8 Benefits of all the 3 optimization steps. The speed up of Gap8 ISA extensions, vectorization and parallelization is between 14.5x and 53.9x. Which means that for instance on a 5x5 byte convolution on a 112x112 input we go from XXX ms to 12.8 ms. 
+As we can see Gap8 Benefits of all the 3 optimization steps. The speed up of Gap8 ISA extensions, vectorization and parallelization is between 14.5x and 53.9x. Which means that for instance at the max chip frequency ***for a 5x5 byte convolutional layer on a 112x112 input we go from 729.4 ms to 12.8 ms***.
 
 
 ![](imgs/energy.png "Energy Comparison")
