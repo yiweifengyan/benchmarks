@@ -35,11 +35,12 @@ In the following chart we show the execution time speed up of Gap8. The baseline
 
 As we can see Gap8 Benefits of all the 3 optimization steps. The speed up of Gap8 ISA extensions, vectorization and parallelization is between 14.5x and 53.9x. Which means that for instance at max Gap8 frequency **for a 5x5 byte convolutional layer on a 112x112 grayscale input image with 100 output filters, on Gap8 it takes only 12.8 ms while on a single core standard RiscV ISA 729.4 ms**.
 
-The next analysis shows the energy efficiency gain in relation with RiscV Standard ISA.
+The next analysis shows the energy efficiency gain with respect to pure RiscV Standard ISA.
 
 ![](imgs/energy.png "Energy Comparison")
 
-Here the results shows that
+Here the results shows that for a given benchmark, we have a benefit from Gap8 ISA extensions (blue bar), from vectors units (red bar) and from parallelism (yellow bar). The parallelism, exploiting shared instruction cache and shared memory, gives an additional ~2x gain in energy efficiency.
+
 
 ### How to run the Benchmarks
 
@@ -100,7 +101,7 @@ Number of iterations for each benchmark: 100
 
 
 
-##### To run the benchmarks in RiscV Standard ISA mode (only single core)
+##### To run the benchmarks in pure RiscV Standard ISA mode (only single core)
 
 ~~~sh
 make clean all run RISCV_FLAGS="-march=rv32imc -DRISCV"
@@ -131,10 +132,10 @@ To change Fabric Controller and Cluster Frequencies you can use this defines. Bo
 
 Here is a table of the supported max frequencies:
 
-| Input Voltage |  Fabric Controller Max Freq    | Cluster Max Freq   |
-|    ---        |---              |    ---        |
-| 1.0 V         |  150 MhZ        |      90 MhZ   |
-| 1.2 V         |  250 MhZ        |     175 MhZ   |
+| Input Voltage | Fabric Controller Max Freq | Cluster Max Freq   |
+|    ---        |           ---              |         ---        |
+| 1.0 V         |             150 MhZ        |           90 MhZ   |
+| 1.2 V         |             250 MhZ        |          175 MhZ   |
 
 
 ### How to measure Power Consumption on the Gapuino Board
