@@ -116,13 +116,13 @@ To switch input data between Byte and Short a define has been placed at beginnin
 #define BYTE
 ~~~
 
-To change the number of iterations executed for each benchmark the iteration number can be changed from this define:
+To change the number of iterations executed by each benchmark you can change the value of this define:
 
 ~~~sh
-#define ITERATIONS 1
+#define ITERATIONS 100
 ~~~
 
-To change Fabric Controller and Cluster Frequencies you can use this defines. Both of then can be alimented at 1 or 1.2 Volts.
+To change Fabric Controller and Cluster Frequencies you can use following defines. Both of then can be alimented at 1 or 1.2 Volts.
 
 ~~~c
 #define ALIM_1_VOLT 1
@@ -152,7 +152,7 @@ To enable the GPIO PIN this define should be commented out:
 
 The results presented in the previous section are sampled with a PicoScope 4444 using 1 probe connected to GPIO 17 and 1 differential probe to measure the voltage drop. The voltage drop can be directly converted to current thanks to the 1 Ohm resistor (I = V / R, where R is 1).
 
-Here an example of Piscope output screen of the benchmarks:
+Here an example of the piscope output screen of the benchmarks:
 
 ![](imgs/pico.png "Gapuino Picoscope Out")
 
