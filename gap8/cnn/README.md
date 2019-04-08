@@ -33,11 +33,13 @@ In the following chart we show the execution time speed up of Gap8. The baseline
 
 ![](imgs/compute.png "Compute Comparison")
 
-As we can see Gap8 Benefits of all the 3 optimization steps. The speed up of Gap8 ISA extensions, vectorization and parallelization is between 14.5x and 53.9x. Which means that for instance at the max chip frequency ***for a 5x5 byte convolutional layer on a 112x112 input we go from 729.4 ms to 12.8 ms***.
+As we can see Gap8 Benefits of all the 3 optimization steps. The speed up of Gap8 ISA extensions, vectorization and parallelization is between 14.5x and 53.9x. Which means that for instance at max Gap8 frequency **for a 5x5 byte convolutional layer on a 112x112 grayscale input image with 100 output filters, on Gap8 it takes only 12.8 ms while on a single core standard RiscV ISA 729.4 ms**.
 
+The next analysis shows the energy efficiency gain in relation with RiscV Standard ISA.
 
 ![](imgs/energy.png "Energy Comparison")
 
+Here the results shows that
 
 ### How to run the Benchmarks
 
@@ -129,10 +131,10 @@ To change Fabric Controller and Cluster Frequencies you can use this defines. Bo
 
 Here is a table of the supported max frequencies:
 
-| Input Voltage |  FC Max Freq    | CL Max Freq   |
+| Input Voltage |  Fabric Controller Max Freq    | Cluster Max Freq   |
 |    ---        |---              |    ---        |
-| 1.0 V         |  150            |      90       |
-| 1.2 V         |  250            |     175       |
+| 1.0 V         |  150 MhZ        |      90 MhZ   |
+| 1.2 V         |  250 MhZ        |     175 MhZ   |
 
 
 ### How to measure Power Consumption on the Gapuino Board
@@ -147,6 +149,12 @@ To enable the GPIO PIN this define should be commented out:
 #define NOGPIO
 ~~~
 
-The results presented in the previous section are sampled with a PicoScope 4444 using 1 probe connected to GPIO 17 and 1 differential probe to measure the Voltage Drop. The voltage drop can be directly converted to current thanks to the 1 Ohm resistor (I = V / R, where R is 1).
+The results presented in the previous section are sampled with a PicoScope 4444 using 1 probe connected to GPIO 17 and 1 differential probe to measure the voltage drop. The voltage drop can be directly converted to current thanks to the 1 Ohm resistor (I = V / R, where R is 1).
 
-Here an example of the output screen of some measurements conducted with the PicoScope and how to interpret them.
+Here an example of Piscope output screen of the benchmarks:
+
+![](imgs/pico.png "Gapuino Picoscope Out")
+
+
+
+The Gpio gives us the starting and ending point of each benchmark.
